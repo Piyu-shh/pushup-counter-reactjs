@@ -141,7 +141,7 @@ const PushupTracker = () => {
                 height="480"
                 style={{ position: 'absolute', zIndex: 10, width: '640px', height: '480px' }}
             />
-            <div>
+            <div style={{ position: 'absolute', zIndex: 11, top: '500px', left: '20px', color: 'white', backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px' }}>
                 <h2>Push-Up Counter: {count}</h2>
                 <p>{feedback}</p>
             </div>
