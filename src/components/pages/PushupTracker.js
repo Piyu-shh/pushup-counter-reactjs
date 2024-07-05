@@ -88,7 +88,7 @@ const PushupTracker = () => {
             formData.append('file', dataURLtoFile(imageSrc, 'image.jpg'));
 
             try {
-                const response = await fetch('http://localhost:8000/process', {
+                const response = await fetch('https://pushup-counter-backend.onrender.com/process', {
                     method: 'POST',
                     body: formData,
                 });
