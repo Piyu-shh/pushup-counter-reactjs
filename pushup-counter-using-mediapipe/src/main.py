@@ -1,9 +1,8 @@
-# main.py
-
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from src.exercise import Exercise
+from exercise import Exercise
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -16,6 +15,15 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Define the data model for the response
 class PoseLandmarks(BaseModel):
@@ -37,7 +45,6 @@ async def process_image(file: UploadFile = File(...)):
 
     # Check if landmarks are detected
     if result.pose_landmarks:
-        lm = result.pose_landmarks.landmark
         # Define landmarks
         landmarks = []
         for lm in result.pose_landmarks.landmark:
@@ -45,7 +52,7 @@ async def process_image(file: UploadFile = File(...)):
 
         # Check push-up form and get feedback
         completed = exercise.pushups(img, result.pose_landmarks.landmark, reps=10)
-        feedback = "Good form!" if not completed else "Exercise complete!"
+        feedback = exercise.get_feedback()
         count = exercise.counter
 
         # Draw landmarks and connections on the image
@@ -70,3 +77,7 @@ async def process_image(file: UploadFile = File(...)):
             'landmarks': [],
             'image': ''
         })
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
