@@ -1,164 +1,152 @@
-import React, { useRef, useEffect, useState } from 'react';
-import '../../App.css'
-import { Pose } from '@mediapipe/pose';
-import { Camera } from '@mediapipe/camera_utils';
-import { calculateAngle } from '../calculateAngle'; // Ensure this path is correct
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import Webcam from 'react-webcam';
 
 const PushupTracker = () => {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [counter, setCounter] = useState(0);
-  const [stage, setStage] = useState('down');
-  const [backAngle, setBackAngle] = useState('yes');
+    const webcamRef = useRef(null);
+    const canvasRef = useRef(null);
+    const [feedback, setFeedback] = useState('');
+    const [count, setCount] = useState(0);
+    const [landmarks, setLandmarks] = useState([]);
+    const [imageHex, setImageHex] = useState('');
 
-  useEffect(() => {
-    const onResults = (results) => {
-      if (!results.poseLandmarks) {
-        return;
-      }
-
-      const image = results.image;
-      const landmarks = results.poseLandmarks;
-
-      const width = videoRef.current.videoWidth;
-      const height = videoRef.current.videoHeight;
-
-      const getCoordinates = (landmark) => [
-        landmark.x * width,
-        landmark.y * height
-      ];
-
-      const r1 = getCoordinates(landmarks[11]);
-      const r2 = getCoordinates(landmarks[13]);
-      const r3 = getCoordinates(landmarks[15]);
-      const l1 = getCoordinates(landmarks[12]);
-      const l2 = getCoordinates(landmarks[14]);
-      const l3 = getCoordinates(landmarks[16]);
-      const r4 = getCoordinates(landmarks[23]);
-      const r5 = getCoordinates(landmarks[25]);
-      const r6 = getCoordinates(landmarks[27]);
-      const l4 = getCoordinates(landmarks[24]);
-      const l5 = getCoordinates(landmarks[26]);
-      const l6 = getCoordinates(landmarks[28]);
-      const rpalm = getCoordinates(landmarks[17]);
-      const lpalm = getCoordinates(landmarks[18]);
-
-      const angleR = calculateAngle(r1, r2, r3);
-      const angleL = calculateAngle(l1, l2, l3);
-      const backAngleR = calculateAngle(r1, r4, r5);
-      const backAngleL = calculateAngle(l1, l4, l5);
-      const palmsDistance = Math.hypot(rpalm[0] - lpalm[0], rpalm[1] - lpalm[1]);
-      const shoulderDiff = Math.abs(r1[1] - l1[1]);
-      const hipDiff = Math.abs(r4[1] - l4[1]);
-      const alignmentThreshold = 50;
-
-      let hasError = false;
-      setBackAngle('yes');
-      let upperBodyColor = 'white';
-      let lowerBodyColor = 'white';
-
-      if (angleR <= 50 || angleL <= 50) {
-        upperBodyColor = 'red';
-      }
-      if (backAngleR <= 120 || backAngleL <= 120) {
-        lowerBodyColor = 'red';
-        setBackAngle('no');
-        hasError = true;
-      }
-      if (palmsDistance < 50) {
-        upperBodyColor = 'red';
-      }
-      if (shoulderDiff > alignmentThreshold || hipDiff > alignmentThreshold) {
-        upperBodyColor = 'red';
-        lowerBodyColor = 'red';
-      }
-
-      const ctx = canvasRef.current.getContext('2d');
-      canvasRef.current.width = width;
-      canvasRef.current.height = height;
-
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      ctx.drawImage(image, 0, 0, canvasRef.current.width, canvasRef.current.height);
-
-      drawLine(ctx, r1, r2, upperBodyColor);
-      drawLine(ctx, r2, r3, upperBodyColor);
-      drawLine(ctx, l1, l2, upperBodyColor);
-      drawLine(ctx, l2, l3, upperBodyColor);
-      drawLine(ctx, r1, l1, upperBodyColor);
-      drawLine(ctx, r4, r5, lowerBodyColor);
-      drawLine(ctx, r5, r6, lowerBodyColor);
-      drawLine(ctx, l4, l5, lowerBodyColor);
-      drawLine(ctx, l5, l6, lowerBodyColor);
-      drawLine(ctx, r1, r4, lowerBodyColor);
-      drawLine(ctx, l1, l4, lowerBodyColor);
-
-      [r1, r2, r3, l1, l2, l3, r4, r5, r6, l4, l5, l6].forEach(joint => drawCircle(ctx, joint));
-
-      if (!hasError) {
-        if (angleL > 160 && angleR > 160) {
-          if (stage === 'down') {
-            setCounter(prevCounter => prevCounter + 0.5);
-            setStage('up');
-          }
+    // Function to convert dataURL to File
+    const dataURLtoFile = (dataurl, filename) => {
+        if (!dataurl) {
+            throw new Error('Data URL is null or undefined');
         }
-        if (angleL < 90 && angleR < 90) {
-          if (stage === 'up') {
-            setCounter(prevCounter => prevCounter + 0.5);
-            setStage('down');
-          }
+
+        const [header, data] = dataurl.split(',');
+        if (!header || !data) {
+            throw new Error('Data URL format is invalid');
         }
-      }
+
+        const mime = header.match(/:(.*?);/)[1];
+        const bstr = atob(data);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
     };
 
-    const pose = new Pose({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-    });
+    // Function to draw landmarks and connections
+    const drawLandmarks = useCallback((imageHex) => {
+        if (canvasRef.current && landmarks.length > 0) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
 
-    pose.setOptions({
-      modelComplexity: 0,
-      smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
+            const img = new Image();
+            img.src = `data:image/jpeg;base64,${imageHex}`;
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
 
-    pose.onResults(onResults);
+                // Draw landmarks
+                landmarks.forEach(lm => {
+                    const { x, y } = lm;
+                    ctx.beginPath();
+                    ctx.arc(x * canvas.width, y * canvas.height, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#FF0000';  // Set landmark color
+                    ctx.fill();
+                });
 
-    if (videoRef.current) {
-      const camera = new Camera(videoRef.current, {
-        onFrame: async () => {
-          await pose.send({ image: videoRef.current });
-        },
-        width: 640,
-        height: 480
-      });
-      camera.start();
-    }
-  }, [counter, stage]);
+                // Draw connections
+                const connections = [
+                    [11, 13], [13, 15], [12, 14], [14, 16], // Arms
+                    [11, 12], [23, 24], [24, 26], [26, 28], [23, 26], [24, 28], [25, 27], [27, 29], // Legs
+                ];
 
-  const drawLine = (ctx, start, end, color) => {
-    ctx.beginPath();
-    ctx.moveTo(start[0], start[1]);
-    ctx.lineTo(end[0], end[1]);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 4;
-    ctx.stroke();
-  };
+                ctx.strokeStyle = '#00FF00';  // Set connection color
+                ctx.lineWidth = 2;
 
-  const drawCircle = (ctx, joint) => {
-    ctx.beginPath();
-    ctx.arc(joint[0], joint[1], 10, 0, 2 * Math.PI);
-    ctx.fillStyle = 'white';
-    ctx.fill();
-  };
+                connections.forEach(([start, end]) => {
+                    if (landmarks[start] && landmarks[end]) {
+                        const [startX, startY] = [landmarks[start].x * canvas.width, landmarks[start].y * canvas.height];
+                        const [endX, endY] = [landmarks[end].x * canvas.width, landmarks[end].y * canvas.height];
+                        ctx.beginPath();
+                        ctx.moveTo(startX, startY);
+                        ctx.lineTo(endX, endY);
+                        ctx.stroke();
+                    }
+                });
+            };
+        }
+    }, [landmarks]);
 
-  return (
-    <div>
-      <h1>Push-up Counter: {counter}</h1>
-      <h1>{backAngle}</h1>
-      <video ref={videoRef} width="640" height="480" style={{ display: 'none' }} />
-      <canvas ref={canvasRef} />
-    </div>
-  );
+    // Capture function to fetch the frame from the webcam
+    const capture = useCallback(async () => {
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot();
+            if (!imageSrc) {
+                console.error('Failed to capture image from webcam.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', dataURLtoFile(imageSrc, 'image.jpg'));
+
+            try {
+                const response = await fetch('http://localhost:8000/process', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setFeedback(data.feedback);
+                setCount(data.count);
+                setLandmarks(data.landmarks);
+                setImageHex(data.image);
+
+                // Call drawLandmarks function with new image
+                drawLandmarks(data.image);
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    }, [drawLandmarks]);
+
+    useEffect(() => {
+        // Capture frames every 100ms
+        const intervalId = setInterval(() => {
+            capture();
+        }, 100);
+
+        return () => clearInterval(intervalId);  // Cleanup interval on component unmount
+    }, [capture]);  // Capture function is a dependency
+
+    useEffect(() => {
+        drawLandmarks(imageHex);  // Draw landmarks whenever imageHex or landmarks change
+    }, [imageHex, drawLandmarks]);
+
+    return (
+        <div>
+            <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                width="640"
+                height="480"
+                style={{ position: 'absolute', zIndex: 9, width: '640px', height: '480px' }}
+            />
+            <canvas
+                ref={canvasRef}
+                width="640"
+                height="480"
+                style={{ position: 'absolute', zIndex: 10, width: '640px', height: '480px' }}
+            />
+            <div>
+                <h2>Push-Up Counter: {count}</h2>
+                <p>{feedback}</p>
+            </div>
+        </div>
+    );
 };
 
 export default PushupTracker;

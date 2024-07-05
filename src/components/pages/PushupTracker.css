@@ -1,0 +1,14 @@
+.pushup-tracker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.feedback {
+    margin-top: 20px;
+}
+
+button {
+    margin-top: 10px;
+}
