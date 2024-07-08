@@ -86,5 +86,8 @@ class Exercise:
 
         return False
 
+    #def situps(self, image: np.ndarray, landmarks: list, reps: int):
+        
+
     def get_feedback(self):
         return "; ".join(self.feedback) if self.feedback else "Good form!"
