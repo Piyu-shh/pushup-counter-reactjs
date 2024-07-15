@@ -1,14 +1,19 @@
+// src/components/Navbar.js
+
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import { Link } from 'react-router-dom';
+import Popup from './Popup';
 import './Navbar.css';
 
 function Navbar() {
   const [click, setClick] = useState(false);
   const [button, setButton] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleClick = () => setClick(!click);
   const closeMobileMenu = () => setClick(false);
+  const togglePopup = () => setShowPopup(!showPopup);
 
   const showButton = () => {
     if (window.innerWidth <= 960) {
@@ -30,7 +35,7 @@ function Navbar() {
         <div className='navbar-container'>
           <Link to='/' className='navbar-logo' onClick={closeMobileMenu}>
             spent.
-            <i class='fab fa-typo3' />
+            <i className='fab fa-typo3' />
           </Link>
           <div className='menu-icon' onClick={handleClick}>
             <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
@@ -70,10 +75,11 @@ function Navbar() {
               </Link>
             </li>
           </ul>
-          {button && <Button buttonStyle='btn--outline'>SIGN UP</Button>}
+          {button && <Button buttonStyle='btn--outline' onClick={togglePopup}>SIGN UP</Button>}
           
         </div>
       </nav>
+      {showPopup && <Popup togglePopup={togglePopup} />}
     </>
   );
 }
