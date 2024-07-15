@@ -6,6 +6,7 @@ from exercise import Exercise
 import cv2
 import numpy as np
 import mediapipe as mp
+import base64
 
 # Initialize the exercise class
 exercise = Exercise()
@@ -57,18 +58,20 @@ async def process_image(file: UploadFile = File(...)):
 
         # Draw landmarks and connections on the image
         img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
-        mp_drawing = mp.solutions.drawing_utils
-        mp_drawing.draw_landmarks(img_rgb, result.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        #mp_drawing = mp.solutions.drawing_utils
+        #mp_drawing.draw_landmarks(img_rgb, result.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        #landmarks=result.pose_landmarks.landmark
 
         # Convert image to bytes
         _, img_encoded = cv2.imencode('.jpg', img_rgb)
         img_bytes = img_encoded.tobytes()
+        img_base64=base64.b64encode(img_bytes).decode('utf-8')
 
         return JSONResponse(content={
             'feedback': feedback,
             'count': count,
             'landmarks': landmarks,
-            'image': img_bytes.hex()  # Convert to hex string for easier handling
+            'image': img_base64  # Convert to hex string for easier handling
         })
     else:
         return JSONResponse(content={
