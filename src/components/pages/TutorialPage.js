@@ -17,7 +17,7 @@ function TutorialPage() {
             allowFullScreen
           ></iframe>
           <iframe
-             src="https://www.youtube.com/embed/zkU6Ok44_CI?si=YlBEqrfaSkRY_wdO"
+             src="https://www.youtube.com/embed/AhdtowFDKT0?si=lfTqaUw8EfJbmYjc"
             title="Pushups Video 2"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -29,14 +29,14 @@ function TutorialPage() {
         <h2>Squats</h2>
         <div className="video-row">
           <iframe
-             src="https://www.youtube.com/embed/zkU6Ok44_CI?si=YlBEqrfaSkRY_wdO"
+             src="https://www.youtube.com/embed/YaXPRqUwItQ?si=qrpyfTrnBkwB-DBs" 
             title="Squats Video 1"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
           <iframe
-             src="https://www.youtube.com/embed/zkU6Ok44_CI?si=YlBEqrfaSkRY_wdO"
+             src="https://www.youtube.com/embed/gsNoPYwWXeM?si=onOqxpFT-IO5N_aS" 
             title="Squats Video 2"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
