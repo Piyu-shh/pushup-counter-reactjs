@@ -24,7 +24,7 @@ function HeroSection() {
   to='/tutorials'
    // Optional: if you want the button itself to handle an onClick event
 >
-  Watch Trailer <i className='far fa-play-circle'  />
+  Watch tutorials <i className='far fa-play-circle'  />
 </Button>
 
 
