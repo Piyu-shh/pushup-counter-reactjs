@@ -47,6 +47,7 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 20px; /* More space between rows */
+    width: 100%;
 }
 
 .label {
@@ -106,6 +107,16 @@ body {
     color: #666; /* Subtle text color */
 }
 
+.weight-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between weight input and unit */
+}
+
+.weight-input {
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     .profile-box {
         width: 90%;
@@ -116,16 +127,18 @@ body {
     .form-row {
         flex-direction: column;
         align-items: flex-start;
+        width: 100%;
     }
 
     .label {
         margin-bottom: 5px;
     }
 
-    .height-container {
+    .height-container,
+    .weight-container {
         display: flex;
         align-items: center;
-        gap: 10px; /* Space between feet and inches inputs */
+        gap: 10px; /* Space between inputs */
     }
 
     .height-input {
@@ -133,24 +146,46 @@ body {
     }
 
     .height-feet,
-    .height-inches {
+    .height-inches,
+    .weight-input {
         max-width: 60px; /* Reduced width */
     }
 
-    .height-label {
+    .height-label,
+    .weight-label {
         font-weight: bold;
         color: #666; /* Subtle text color */
-    }
-
-    .weight-input {
-        width: 100%;
-        margin-top: 5px;
     }
 
     .age-display {
         margin-left: 0;
         margin-top: 5px;
     }
+}
+
+.save-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto; /* Center the button horizontally */
+}
+
+.save-button:hover {
+    background-color: #45a049;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%; /* Ensure the button container takes full width */
+    margin-top: 20px; /* Space above the button */
 }
 
 /* Additional styles for height inputs and labels */
