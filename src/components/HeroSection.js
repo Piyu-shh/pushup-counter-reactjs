@@ -17,14 +17,16 @@ function HeroSection() {
           <Button className='btns' buttonStyle='btn--outline' buttonSize='btn--large' to = '/sign-up'>
             GET STARTED
           </Button>
-            <Button
+          <Button
   className='btns'
   buttonStyle='btn--primary'
   buttonSize='btn--large'
   to='/tutorials'
+   // Optional: if you want the button itself to handle an onClick event
 >
-  Watch Trailer <i className='far fa-play-circle' />
+  Watch Trailer <i className='far fa-play-circle'  />
 </Button>
+
 
           
         </div>
