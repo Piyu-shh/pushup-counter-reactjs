@@ -26,6 +26,18 @@ const ProfilePage = () => {
 
   const age = calculateAge(dob);
 
+  const handleSave = () => {
+    const profileData = {
+      gender,
+      dob,
+      height: { feet: heightFeet, inches: heightInches },
+      weight,
+      weightUnit,
+    };
+    console.log('Profile Data:', profileData);
+    // Here you can add the logic to save the data, e.g., send it to a backend server
+  };
+
   return (
     <div className="container">
       <div className="profile-box">
@@ -43,7 +55,7 @@ const ProfilePage = () => {
           <DatePicker
             selected={dob}
             onChange={handleDobChange}
-            maxDate={new Date()} 
+            maxDate={new Date()}
             className="date-picker"
           />
           <span className="age-display">Age: {age}</span>
@@ -71,16 +83,21 @@ const ProfilePage = () => {
         </div>
         <div className="form-row">
           <label className="label">Weight:</label>
-          <input
-            className="weight-input"
-            type="number"
-            value={weight}
-            onChange={handleWeightChange}
-          />
-          <select className="select" value={weightUnit} onChange={handleWeightUnitChange}>
-            <option value="kg">kg</option>
-            <option value="lbs">lbs</option>
-          </select>
+          <div className="weight-container">
+            <input
+              className="weight-input"
+              type="number"
+              value={weight}
+              onChange={handleWeightChange}
+            />
+            <select className="select" value={weightUnit} onChange={handleWeightUnitChange}>
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </div>
+        </div>
+        <div className="form-row button-container">
+          <button className="save-button" onClick={handleSave}>Save</button>
         </div>
       </div>
     </div>
