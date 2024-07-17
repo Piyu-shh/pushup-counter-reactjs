@@ -109,7 +109,7 @@ const PushupTracker = () => {
             formData.append('file', dataURLtoFile(imageSrc, 'image.jpg'));
 
             try {
-                const response = await fetch('https://pushup-counter-backend.onrender.com/process', {
+                const response = await fetch('http://localhost:8000/process', {
                     method: 'POST',
                     body: formData,
                 });
@@ -142,14 +142,14 @@ const PushupTracker = () => {
         // Capture frames every 100ms
         const intervalId = setInterval(() => {
             capture();
-        }, 100);
+        }, 150);
 
         return () => clearInterval(intervalId);  // Cleanup interval on component unmount
-    }, []);  // Removed capture dependency
+    }, [capture]);  // Removed capture dependency
 
     useEffect(() => {
         drawLandmarks(imageHex);  // Draw landmarks whenever imageHex or landmarks change
-    }, [imageHex, landmarks, clr]);  // Added landmarks and clr dependencies
+    }, [imageHex, landmarks, clr,drawLandmarks]);  // Added landmarks and clr dependencies
 
     return (
         <div>
