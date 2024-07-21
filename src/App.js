@@ -5,10 +5,12 @@ import Home from './components/pages/Home';
 import PushUpTracker from './components/pages/PushupTracker';
 import ProfilePage from './components/pages/ProfilePage';
 import TutorialPage from './components/pages/TutorialPage';
+import { AuthContextProvider } from './components/authContext';
 
 function App() {
   return (
     <>
+    <AuthContextProvider>
       <Router>
         <Navbar />
         <Routes>
@@ -18,6 +20,7 @@ function App() {
           <Route path="/tutorials" element={<TutorialPage />} />
         </Routes>
       </Router>
+    </AuthContextProvider>
     </>
   );
 }
