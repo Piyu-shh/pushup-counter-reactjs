@@ -6,7 +6,8 @@ import PushUpTracker from './components/pages/PushupTracker';
 import ProfilePage from './components/pages/ProfilePage';
 import TutorialPage from './components/pages/TutorialPage';
 import { AuthContextProvider } from './components/authContext';
-
+import SquatsTracker from './components/pages/SquatsTracker'
+import Cards from './components/Cards'
 function App() {
   return (
     <>
@@ -18,6 +19,8 @@ function App() {
           <Route path="/pushup" element={<PushUpTracker />} />
           <Route path="/ProfilePage" element={<ProfilePage />} />
           <Route path="/tutorials" element={<TutorialPage />} />
+          <Route path="/squats" element={<SquatsTracker/>}/>
+          <Route path="/cards" element={<Cards/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>

@@ -5,7 +5,6 @@ import { Button } from './Button';
 import './HeroSection.css';
 
 
-
 function HeroSection() {
   return (
     <div className='hero-container'>
@@ -14,21 +13,17 @@ function HeroSection() {
         <h1>ADVENTURE AWAITS</h1>
         <p>What are you waiting for?</p>
         <div className='hero-btns'>
-          <Button className='btns' buttonStyle='btn--outline' buttonSize='btn--large' to = '/sign-up'>
+          <Button className='btns' buttonStyle='btn--outline' buttonSize='btn--large' to='/cards'>
             GET STARTED
           </Button>
           <Button
-  className='btns'
-  buttonStyle='btn--primary'
-  buttonSize='btn--large'
-  to='/tutorials'
-   // Optional: if you want the button itself to handle an onClick event
->
-  Watch tutorials <i className='far fa-play-circle'  />
-</Button>
-
-
-          
+            className='btns'
+            buttonStyle='btn--primary'
+            buttonSize='btn--large'
+            to='/tutorials'
+          >
+            Watch tutorials <i className='far fa-play-circle' />
+          </Button>
         </div>
       </div>
     </div>

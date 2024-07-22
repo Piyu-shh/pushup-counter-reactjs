@@ -12,17 +12,18 @@ export const AuthContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [uuid, setUuid] = useState(null);
 
-  const googleSignIn = () => {
+  const googleSignIn = async() => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
   };
 
-  const logOut = () => {
+  const logOut = async() => {
     signOut(auth);
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      console.log(currentUser);
       setUser(currentUser);
       if (currentUser) {
         const profile = await getUserProfile(uuid);
