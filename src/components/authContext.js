@@ -23,7 +23,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      console.log(currentUser);
+      //console.log(currentUser);
       setUser(currentUser);
       if (currentUser) {
         const profile = await getUserProfile(uuid);
@@ -52,7 +52,11 @@ export const AuthContextProvider = ({ children }) => {
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [uuid]);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, googleSignIn, logOut, loading, userData, uuid }}>
