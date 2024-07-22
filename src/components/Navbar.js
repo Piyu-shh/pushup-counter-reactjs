@@ -7,6 +7,7 @@ import Popup from './Popup';
 import './Navbar.css';
 import { UserAuth } from './authContext';
 
+
 function Navbar() {
   const { user, googleSignIn, logOut, loading } = UserAuth();
   const [click, setClick] = useState(false);
