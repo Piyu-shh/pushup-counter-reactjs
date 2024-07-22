@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { useNavigate } from 'react-router-dom';
-import './PushupTracker.css';
+import './SquatsTracker.css';
 
-const PushupTracker = () => {
+const SquatsTracker = () => {
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
     const navigate = useNavigate();
@@ -144,6 +144,7 @@ const PushupTracker = () => {
     // Function to handle end session button click
     const handleEndSession = async () => {
         try {
+            //API PART
             // const response = await fetch('http://localhost:8000/end-session', {
             //     method: 'POST',
             //     headers: {
@@ -177,7 +178,7 @@ const PushupTracker = () => {
     }, [imageHex, landmarks, clr]);
 
     return (
-        <div className='pushup-tracker'>
+        <div className='squats-tracker'>
             <Webcam
                 audio={false}
                 ref={webcamRef}
@@ -193,7 +194,7 @@ const PushupTracker = () => {
                 style={{ position: 'absolute', zIndex: 10, width: '640px', height: '480px' }}
             />
             <div style={{ position: 'absolute', zIndex: 11, top: '500px', left: '20px', color: 'white', backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px' }}>
-                <h2>Push-Up Counter: {count}</h2>
+                <h2>Squats Counter: {count}</h2>
                 <p>{feedback}</p>
             </div>
             <button className='end-session-button' onClick={handleEndSession}>END SESSION</button>
@@ -201,4 +202,4 @@ const PushupTracker = () => {
     );
 };
 
-export default PushupTracker;
+export default SquatsTracker;
