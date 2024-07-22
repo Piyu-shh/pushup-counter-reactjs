@@ -1,12 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { useNavigate } from 'react-router-dom';
-import './PushupTracker.css';
 
 const PushupTracker = () => {
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
-    const navigate = useNavigate();
     const [feedback, setFeedback] = useState('');
     const [count, setCount] = useState(0);
     const [landmarks, setLandmarks] = useState([]);
@@ -141,28 +138,6 @@ const PushupTracker = () => {
         }
     };
 
-    // Function to handle end session button click
-    const handleEndSession = async () => {
-        try {
-            // const response = await fetch('http://localhost:8000/end-session', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ count }),
-            // });
-
-            // if (!response.ok) {
-            //     throw new Error(`HTTP error! status: ${response.status}`);
-            // }
-
-            // Navigate to home page
-            navigate('/');
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
     useEffect(() => {
         // Capture frames every 100ms
         const intervalId = setInterval(() => {
@@ -170,14 +145,14 @@ const PushupTracker = () => {
         }, 150);
 
         return () => clearInterval(intervalId);  // Cleanup interval on component unmount
-    }, []);
+    }, [capture]);  // Removed capture dependency
 
     useEffect(() => {
         drawLandmarks(imageHex);  // Draw landmarks whenever imageHex or landmarks change
-    }, [imageHex, landmarks, clr]);
+    }, [imageHex, landmarks, clr,drawLandmarks]);  // Added landmarks and clr dependencies
 
     return (
-        <div className='pushup-tracker'>
+        <div>
             <Webcam
                 audio={false}
                 ref={webcamRef}
@@ -196,7 +171,6 @@ const PushupTracker = () => {
                 <h2>Push-Up Counter: {count}</h2>
                 <p>{feedback}</p>
             </div>
-            <button className='end-session-button' onClick={handleEndSession}>END SESSION</button>
         </div>
     );
 };

@@ -20,7 +20,7 @@ function Cards() {
                     src={exmpImage2}
                     text="Squats build leg and glute strength."
                     label="Squats"
-                    path='/squats'
+                    path='/services'
                     />
                 </ul>
             </div>

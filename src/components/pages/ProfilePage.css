@@ -27,8 +27,7 @@ body {
     width: 90%;
     max-width: 500px;
     position: relative; /* Ensure it's above the background */
-    transform: translateY(-10%); 
-    /* Adjust this value to move it higher or lower */
+    transform: translateY(-30%); /* Adjust this value to move it higher or lower */
     transition: transform 0.3s ease-in-out;
 }
 
