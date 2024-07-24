@@ -1,13 +1,13 @@
-# Spent
+# spent.
 
-Welcome to **Spent**, a comprehensive web application designed to help you track and improve your workouts. Currently, the application supports push-up tracking with real-time feedback, and more workouts will be added in the future.
+Welcome to **spent.**, a comprehensive web application designed to help you track and improve your workouts. Currently, the application supports push-up tracking with real-time feedback, and more workouts will be added in the future.
 
 ## Features
 
 - **Real-time Push-up Tracking**: Get immediate feedback on your form and count your repetitions accurately.
 - **Form Correction**: Identify and correct common mistakes in your push-up form, such as arm positioning and back alignment.
 - **User Authentication**: Secure login and profile management using Firebase authentication.
-- **Future Workouts**: Stay tuned for additional workout tracking features that will be integrated into Spent.
+- **Future Workouts**: Stay tuned for additional workout tracking features that will be integrated into spent.
 
 ## Technologies Used
 
@@ -34,7 +34,7 @@ Follow these steps to set up the project on your local machine.
 
 ```sh
 git clone https://github.com/yourusername/spent.git
-cd spent/backend
+cd spent..../backend
 ```
 
 2. Create and activate a virtual environment:
@@ -98,8 +98,3 @@ REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
 REACT_APP_FIREBASE_APP_ID=your-app-id
 ```
 
-If you have any questions or need further assistance, feel free to reach out to us at support@spent.com.
-
----
-
-Thank you for using Spent! Stay fit and healthy.
