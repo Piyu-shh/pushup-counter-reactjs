@@ -29,13 +29,31 @@ const ProfilePage = () => {
   const handleSave = () => {
     const profileData = {
       gender,
-      dob,
-      height: { feet: heightFeet, inches: heightInches },
+      dob: dob.toISOString(),
+      height_feet: heightFeet,
+      height_inches: heightInches,
       weight,
-      weightUnit,
+      weight_unit: weightUnit,
     };
-    console.log('Profile Data:', profileData);
-    // Here you can add the logic to save the data, e.g., send it to a backend server
+
+    // Retrieve the auth token from localStorage
+    const authToken = localStorage.getItem('auth_token');
+
+    fetch('http://localhost:8000/login/profile-set/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(profileData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Profile Data:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   };
 
   return (

@@ -1,4 +1,5 @@
 // src/context/AuthContext.js
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from './signInConfig';
@@ -19,43 +20,69 @@ export const AuthContextProvider = ({ children }) => {
 
   const logOut = async() => {
     signOut(auth);
+    localStorage.removeItem('auth_token');
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      console.log(currentUser);
       setUser(currentUser);
       if (currentUser) {
-        const profile = await getUserProfile(uuid);
-        if (profile) {
-          setUserData(profile);
-          setUuid(profile.user_id);
-        } else {
-          const newUserProfile = {
-            displayName: currentUser.displayName,
-            email: currentUser.email,
-            photoURL: currentUser.photoURL,
-            uid: currentUser.uid,
-            metadata: {
-              creationTime: currentUser.metadata.creationTime,
-              lastSignInTime: currentUser.metadata.lastSignInTime,
+        try {
+          const idToken = await currentUser.getIdToken();
+          const response = await fetch('http://localhost:8000/login/login/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-          };
-          const uuid = await setUserProfile(newUserProfile);
-          if (uuid) {
-            newUserProfile.user_id = uuid;
-            setUserData(newUserProfile);
-            setUuid(newUserProfile.user_id);
+            body: JSON.stringify({ id_token: idToken }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('auth_token', data.auth_token);
+            const profile = await getUserProfile(data.userid);
+            if (profile) {
+              setUserData(profile);
+              setUuid(profile.user_id);
+            } else {
+              const newUserProfile = {
+                displayName: currentUser.displayName,
+                email: currentUser.email,
+                photoURL: currentUser.photoURL,
+                uid: currentUser.uid,
+                metadata: {
+                  creationTime: currentUser.metadata.creationTime,
+                  lastSignInTime: currentUser.metadata.lastSignInTime,
+                },
+              };
+              const uuid = await setUserProfile(newUserProfile);
+              if (uuid) {
+                newUserProfile.user_id = uuid;
+                setUserData(newUserProfile);
+                setUuid(newUserProfile.user_id);
+              }
+            }
+          } else {
+            console.error('Failed to login', response.statusText);
           }
+        } catch (error) {
+          console.error('Error verifying ID token', error);
         }
       }
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
+  const fetchWithAuth = async (url, options = {}) => {
+    const token = localStorage.getItem('auth_token');
+    const headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+    return fetch(url, { ...options, headers });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, googleSignIn, logOut, loading, userData, uuid }}>
+    <AuthContext.Provider value={{ user, googleSignIn, logOut, loading, userData, uuid, fetchWithAuth }}>
       {children}
     </AuthContext.Provider>
   );
