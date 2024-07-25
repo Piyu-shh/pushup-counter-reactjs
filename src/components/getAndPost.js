@@ -1,36 +1,38 @@
-// getAndPost.js
+// src/getAndPost.js
 
-import axios from 'axios';
+const API_URL = 'http://localhost:8000'; // Centralized API URL
 
-const apiUrl = '';
-
-
-export const getUserProfile = async (userId) => {
+export const getUserProfile = async () => {
   try {
-    const response = await axios.get(`?user_id=${userId}`);
-
-    // Assuming the API response contains the user data in a field called 'data'
-    return response.data;
+    const response = await fetch(`${API_URL}/profile/profile-get/`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch user profile');
+    }
+    return response.json();
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    console.error('Error fetching user profile:', error);
     return null;
   }
 };
 
 export const setUserProfile = async (userData) => {
   try {
-    const response = await axios.post(`${apiUrl}/set_profile/`, userData, {
-      headers: { 'Content-Type': 'application/json' }
+    const response = await fetch(`${API_URL}/profile/profile-set/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      },
+      body: JSON.stringify(userData),
     });
-    if(response.statusCode === 200){
-      console.log("Profile Set successfully");
-      const uuid = response.data;
-      return uuid;
-    } else {
-      console.error(`Failed to set profile: ${response.data}`);
-      const uuid = response.data;
-      return uuid;
+    if (!response.ok) {
+      throw new Error('Failed to set user profile');
     }
+    return response.json();
   } catch (error) {
     console.error('Error setting user profile:', error);
     return null;

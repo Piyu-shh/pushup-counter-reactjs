@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+// src/ProfilePage.js
+
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './ProfilePage.css';
+import { getUserProfile, setUserProfile } from '../getAndPost';
 
 const ProfilePage = () => {
   const [gender, setGender] = useState('Male');
@@ -10,12 +13,35 @@ const ProfilePage = () => {
   const [heightInches, setHeightInches] = useState(8);
   const [weight, setWeight] = useState(70);
   const [weightUnit, setWeightUnit] = useState('kg');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profileData = await getUserProfile();
+        if (profileData) {
+          setGender(profileData.gender || 'Male');
+          setDob(new Date(profileData.dob) || new Date());
+          setHeightFeet(profileData.height_feet || 5);
+          setHeightInches(profileData.height_inches || 8);
+          setWeight(profileData.weight || 70);
+          setWeightUnit(profileData.weight_unit || 'kg');
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleGenderChange = (e) => setGender(e.target.value);
   const handleDobChange = (date) => setDob(date);
-  const handleHeightFeetChange = (e) => setHeightFeet(e.target.value);
-  const handleHeightInchesChange = (e) => setHeightInches(e.target.value);
-  const handleWeightChange = (e) => setWeight(e.target.value);
+  const handleHeightFeetChange = (e) => setHeightFeet(parseInt(e.target.value, 10) || 0);
+  const handleHeightInchesChange = (e) => setHeightInches(parseInt(e.target.value, 10) || 0);
+  const handleWeightChange = (e) => setWeight(parseInt(e.target.value, 10) || 0);
   const handleWeightUnitChange = (e) => setWeightUnit(e.target.value);
 
   const calculateAge = (dob) => {
@@ -26,7 +52,7 @@ const ProfilePage = () => {
 
   const age = calculateAge(dob);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const profileData = {
       gender,
       dob: dob.toISOString(),
@@ -36,25 +62,21 @@ const ProfilePage = () => {
       weight_unit: weightUnit,
     };
 
-    // Retrieve the auth token from localStorage
-    const authToken = localStorage.getItem('auth_token');
-
-    fetch('http://localhost:8000/login/profile-set/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-      },
-      body: JSON.stringify(profileData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Profile Data:', data);
-    })
-    .catch(error => {
+    try {
+      const response = await setUserProfile(profileData);
+      if (response) {
+        console.log('Profile Data:', response);
+      } else {
+        console.error('Failed to set profile data');
+      }
+    } catch (error) {
       console.error('Error:', error);
-    });
+    }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container">

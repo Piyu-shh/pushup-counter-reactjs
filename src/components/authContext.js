@@ -13,14 +13,59 @@ export const AuthContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [uuid, setUuid] = useState(null);
 
-  const googleSignIn = async() => {
+  const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const currentUser = result.user;
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch('http://localhost:8000/login/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id_token: idToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('auth_token', data.auth_token);
+
+        const profile = await getUserProfile();
+        if (profile) {
+          setUserData(profile);
+          setUuid(profile.user_id);
+        } else {
+          const newUserProfile = {
+            gender: 'Male', // Default or fetched data
+            dob: new Date().toISOString(), // Default or fetched data
+            height_feet: 5, // Default or fetched data
+            height_inches: 8, // Default or fetched data
+            weight: 70, // Default or fetched data
+            weight_unit: 'kg', // Default or fetched data
+            user_id: data.userid // Assuming this is required
+          };
+          const uuid = await setUserProfile(newUserProfile);
+          if (uuid) {
+            newUserProfile.user_id = uuid;
+            setUserData(newUserProfile);
+            setUuid(newUserProfile.user_id);
+          }
+        }
+      } else {
+        console.error('Failed to login', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error verifying ID token', error);
+    }
   };
 
-  const logOut = async() => {
-    signOut(auth);
+  const logOut = async () => {
+    await signOut(auth);
     localStorage.removeItem('auth_token');
+    setUser(null);
+    setUserData(null);
+    setUuid(null);
   };
 
   useEffect(() => {
@@ -40,27 +85,13 @@ export const AuthContextProvider = ({ children }) => {
           if (response.ok) {
             const data = await response.json();
             localStorage.setItem('auth_token', data.auth_token);
-            const profile = await getUserProfile(data.userid);
+
+            const profile = await getUserProfile();
             if (profile) {
               setUserData(profile);
               setUuid(profile.user_id);
             } else {
-              const newUserProfile = {
-                displayName: currentUser.displayName,
-                email: currentUser.email,
-                photoURL: currentUser.photoURL,
-                uid: currentUser.uid,
-                metadata: {
-                  creationTime: currentUser.metadata.creationTime,
-                  lastSignInTime: currentUser.metadata.lastSignInTime,
-                },
-              };
-              const uuid = await setUserProfile(newUserProfile);
-              if (uuid) {
-                newUserProfile.user_id = uuid;
-                setUserData(newUserProfile);
-                setUuid(newUserProfile.user_id);
-              }
+              // Handle the case where profile does not exist, if needed
             }
           } else {
             console.error('Failed to login', response.statusText);
