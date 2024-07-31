@@ -8,6 +8,7 @@ import TutorialPage from './components/pages/TutorialPage';
 import { AuthContextProvider } from './components/authContext';
 import SquatsTracker from './components/pages/SquatsTracker'
 import Cards from './components/Cards'
+import SessionHistory from './components/pages/SessionHistoryPage'
 function App() {
   return (
     <>
@@ -21,6 +22,7 @@ function App() {
           <Route path="/tutorials" element={<TutorialPage />} />
           <Route path="/squats" element={<SquatsTracker/>}/>
           <Route path="/cards" element={<Cards/>}/>
+          <Route path="/sessionhistory" element={<SessionHistory/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>
