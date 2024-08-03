@@ -1,6 +1,6 @@
 // src/getAndPost.js
 
-const API_URL = 'https://pushup-counter-backend.onrender.com'; // Centralized API URL
+const API_URL = 'https://pushup-counter-backend.vercel.app'; // Centralized API URL
 
 export const getUserProfile = async () => {
   try {

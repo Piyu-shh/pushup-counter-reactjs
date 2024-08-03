@@ -19,7 +19,7 @@ export const AuthContextProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const currentUser = result.user;
       const idToken = await currentUser.getIdToken();
-      const response = await fetch('https://pushup-counter-backend.onrender.com/login/login/', {
+      const response = await fetch('https://pushup-counter-backend.vercel.app/login/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const AuthContextProvider = ({ children }) => {
       if (currentUser) {
         try {
           const idToken = await currentUser.getIdToken();
-          const response = await fetch('http://localhost:8000/login/login/', {
+          const response = await fetch('https://pushup-counter-backend.vercel.app/login/login/', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
