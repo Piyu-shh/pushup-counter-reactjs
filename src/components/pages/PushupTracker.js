@@ -112,7 +112,7 @@ const PushupTracker = () => {
             formData.append('file', dataURLtoFile(imageSrc, 'image.jpg'));
 
             try {
-                const response = await fetch('http://localhost:8000/process', {
+                const response = await fetch('https://onlypushups.onrender.com/process', {
                     method: 'POST',
                     body: formData,
                 });
@@ -144,19 +144,17 @@ const PushupTracker = () => {
     // Function to handle end session button click
     const handleEndSession = async () => {
         try {
-            // const response = await fetch('http://localhost:8000/end-session', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ count }),
-            // });
+            const response = await fetch('http://localhost:8000/end-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ count }),
+            });
 
-            // if (!response.ok) {
-            //     throw new Error(`HTTP error! status: ${response.status}`);
-            // }
-
-            // Navigate to home page
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             navigate('/');
         } catch (error) {
             console.error('Error:', error);
